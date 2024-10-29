@@ -1,0 +1,97 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
+plugins {
+    id 'java'
+    id "com.vanniktech.maven.publish" version "0.28.0"
+    id 'signing'
+}
+
+group = 'org.senna'
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(Javadoc) {
+    options {
+        encoding 'UTF-8'
+    }
+}
+
+signing {
+    sign publishing.publications
+}
+
+mavenPublishing {
+    signAllPublications()
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+    coordinates("io.github.soyesenna", "rest-microservice", "0.0.1")
+
+    pom {
+        name = 'rest-microservice'
+        description = 'Simple MicroService using RestAPI for Spring'
+        url = '<https://github.com/soyesenna/RestMicroService.git>'
+
+        licenses {
+            license {
+                name = 'Apache License'
+                url = '<https://github.com/soyesenna/RestMicroService/blob/main/LICENSE>'
+            }
+        }
+
+        developers {
+            developer {
+                id = 'soyesenna'
+                name = 'Jooyoung Kim'
+                email = 'kjy915875@gmail.com'
+            }
+        }
+
+        /**
+         connection = 'scm:git:github.com/[Github 사용자명]/[오픈소스 Repository 이름].git'
+         developerConnection = 'scm:git:ssh://github.com/[Github 사용자명]/[오픈소스 Repository 이름].git'
+         url = '<https://github.com/>[Github 사용자명]/[오픈소스 Repository 이름]/tree/[배포 브랜치명]'
+         */
+        scm {
+            connection = 'scm:git:github.com/soyesenna/RestMicroService.git'
+            developerConnection = 'scm:git:ssh://github.com:soyesenna/RestMicroService.git'
+            url = '<https://github.com/soyesenna/RestMicroService.git/tree/main>'
+        }
+    }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure
+    implementation group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '3.3.2'
+
+    // https://mvnrepository.com/artifact/org.springframework/spring-context
+    implementation group: 'org.springframework', name: 'spring-context', version: '6.1.10'
+
+    // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
+    implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.15.7'
+
+    // https://mvnrepository.com/artifact/org.springframework/spring-web
+    implementation group: 'org.springframework', name: 'spring-web', version: '6.1.10'
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.0'
+
+
+    // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
+    compileOnly group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
+
+    // https://mvnrepository.com/artifact/org.springframework/spring-webmvc
+    implementation group: 'org.springframework', name: 'spring-webmvc', version: '6.1.10'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.3.2'
+}
+
+test {
+    useJUnitPlatform()
+}
