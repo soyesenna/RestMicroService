@@ -32,7 +32,7 @@ Welcome to the **MicroService Communication Abstraction** project! This library 
 
 ### Prerequisites
 
-- **Java 17** or higher
+- **Java 21** or higher
 - **Spring Boot 3.2** or higher
 
 ### Installation
