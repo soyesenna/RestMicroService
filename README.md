@@ -100,10 +100,10 @@ Each method's parameter represents the payload to send, and the return type repr
 
 ```java
 @GetRequest("/users/{id}")
-UserDto getUserById(@PathVariable Long id);
+UserDto getUserById(Long id);
 
 @PostRequest("/users")
-void createUser(@RequestBody UserCreateDto userCreateDto);
+void createUser(UserCreateDto userCreateDto);
 
 // Other methods...
 ```
@@ -176,8 +176,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MicroServiceException.class)
     public ResponseEntity<ErrorInfo> handleMicroServiceException(MicroServiceException ex) {
-        ErrorInfo errorInfo = new ErrorInfo(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorInfo);
+        // Error handling logic
     }
 
     // Other exception handlers...
@@ -199,7 +198,7 @@ Contributions are welcome! Please open issues and submit pull requests for any i
 
 ## 📄 License
 
-This project is licensed under the Apache License License.
+This project is licensed under the Apache 2.0 License License.
 
 ---
 
