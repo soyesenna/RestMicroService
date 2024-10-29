@@ -57,7 +57,7 @@ mavenPublishing {
         scm {
             connection = 'scm:git:github.com/soyesenna/RestMicroService.git'
             developerConnection = 'scm:git:ssh://github.com:soyesenna/RestMicroService.git'
-            url = '<https://github.com/soyesenna/RestMicroService.git/tree/main>'
+            url = '<https://github.com/soyesenna/RestMicroService/tree/main>'
         }
     }
 }
