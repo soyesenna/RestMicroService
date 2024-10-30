@@ -23,6 +23,10 @@ public class MicroServiceResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+        if (MicroServiceContext.isContextEmpty()) {
+            return false;
+        }
+
         boolean isClient = MicroServiceContext.getClientId().equals(ConstantStrings.API_CLIENT_ID);
 
         boolean isSupport = false;

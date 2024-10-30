@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'org.senna'
-version = '0.0.1'
+version = '0.0.11'
 
 repositories {
     mavenCentral()
@@ -27,7 +27,7 @@ mavenPublishing {
     signAllPublications()
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
-    coordinates("io.github.soyesenna", "rest-microservice", "0.0.1")
+    coordinates("io.github.soyesenna", "rest-microservice", "0.0.11")
 
     pom {
         name = 'rest-microservice'

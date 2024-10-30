@@ -28,6 +28,10 @@ public class MicroServiceContext {
         return CONTEXT.get().get(ContextKey.CLIENT_ID);
     }
 
+    public static boolean isContextEmpty() {
+        return CONTEXT.get() == null;
+    }
+
     public static void clear() {
         CONTEXT.remove();
     }
