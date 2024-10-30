@@ -43,19 +43,19 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>io.github.soyesenna</groupId>
     <artifactId>rest-microservice</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.11</version>
 </dependency>
 ```
 
 Add the dependency to your `build.gradle`:
 ```gradle
-implementation group: 'io.github.soyesenna', name: 'rest-microservice', version: '0.0.1'
+implementation group: 'io.github.soyesenna', name: 'rest-microservice', version: '0.0.11'
 ```
 
 or
 
 ```gradle
-implementation("io.github.soyesenna:rest-microservice:0.0.1")
+implementation("io.github.soyesenna:rest-microservice:0.0.11")
 ```
 
 ## 🛠 Usage
