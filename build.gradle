@@ -70,26 +70,30 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '3.3.2'
 
     // https://mvnrepository.com/artifact/org.springframework/spring-context
-    implementation group: 'org.springframework', name: 'spring-context', version: '6.1.10'
+    implementation group: 'org.springframework', name: 'spring-context', version: '6.1.14'
 
     // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
     implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.15.7'
 
     // https://mvnrepository.com/artifact/org.springframework/spring-web
-    implementation group: 'org.springframework', name: 'spring-web', version: '6.1.10'
+    implementation group: 'org.springframework', name: 'spring-web', version: '6.1.12'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.0'
-
 
     // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
     compileOnly group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
 
     // https://mvnrepository.com/artifact/org.springframework/spring-webmvc
-    implementation group: 'org.springframework', name: 'spring-webmvc', version: '6.1.10'
+    implementation group: 'org.springframework', name: 'spring-webmvc', version: '6.1.13'
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.3.2'
+
+
+    // https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
+    implementation group: 'jakarta.validation', name: 'jakarta.validation-api', version: '3.1.0'
+
 }
 
 test {
