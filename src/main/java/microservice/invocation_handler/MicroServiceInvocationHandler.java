@@ -14,6 +14,7 @@ import microservice.annotations.PutRequest;
 import microservice.config.MicroServiceConfig;
 import microservice.context.MicroServiceContext;
 import microservice.exception.MicroServiceNotResponseException;
+import microservice.exception.NotDefinitionServiceUrlException;
 import microservice.templates.MicroServiceRequest;
 import microservice.templates.MicroServiceResponse;
 import org.apache.commons.logging.Log;
@@ -27,15 +28,15 @@ import org.springframework.web.client.RestClient.RequestHeadersSpec;
 public class MicroServiceInvocationHandler implements InvocationHandler {
 
   private static final Log log = LogFactory.getLog(MicroServiceInvocationHandler.class);
-  private final String baseUrl;
+  private final String serviceName;
   private final RestClient restClient;
   private final Class<?> serviceInterface;
   private final MicroServiceConfig microServiceConfig;
   private final ObjectMapper objectMapper;
 
-  public MicroServiceInvocationHandler(String baseUrl, RestClient restClient,
+  public MicroServiceInvocationHandler(String serviceName, RestClient restClient,
       Class<?> serviceInterface, MicroServiceConfig microServiceConfig, ObjectMapper objectMapper) {
-    this.baseUrl = baseUrl;
+    this.serviceName = serviceName;
     this.restClient = restClient;
     this.serviceInterface = serviceInterface;
     this.microServiceConfig = microServiceConfig;
@@ -55,7 +56,7 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
     try {
       String responseBody = responseEntity.getBody();
       if (responseBody == null) {
-        throw new MicroServiceNotResponseException(baseUrl);
+        throw new MicroServiceNotResponseException(serviceName);
       }
       JavaType type = objectMapper.getTypeFactory().constructParametricType(
           MicroServiceResponse.class,
@@ -64,12 +65,15 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
       MicroServiceResponse<?> microServiceResponse = objectMapper.readValue(responseBody, type);
       return microServiceResponse.payload();
     } catch (NullPointerException e) {
-      throw new MicroServiceNotResponseException(baseUrl);
+      throw new MicroServiceNotResponseException(serviceName);
     }
   }
 
   private ResponseEntity<String> doRequest(Method method, String requestJson) {
-    String uri = baseUrl;
+    String uri = this.microServiceConfig.getUrls().get(serviceName);
+    if (uri == null) {
+      throw new NotDefinitionServiceUrlException(serviceName);
+    }
     RequestHeadersSpec<?> requestHeadersSpec;
 
     if (method.isAnnotationPresent(GetRequest.class)) {

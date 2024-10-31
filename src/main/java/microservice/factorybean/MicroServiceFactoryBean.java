@@ -40,12 +40,12 @@ public class MicroServiceFactoryBean<T> implements FactoryBean<T>, InitializingB
   @Override
   public void afterPropertiesSet() {
     MicroService microService = serviceInterface.getAnnotation(MicroService.class);
-    String baseUrl = microService.value();
+    String serviceName = microService.value();
 
     proxyInstance = (T) Proxy.newProxyInstance(
         serviceInterface.getClassLoader(),
         new Class[] { serviceInterface },
-        new MicroServiceInvocationHandler(baseUrl, restClient, serviceInterface, microServiceConfig, microServiceObjectMapper)
+        new MicroServiceInvocationHandler(serviceName, restClient, serviceInterface, microServiceConfig, microServiceObjectMapper)
     );
   }
 }

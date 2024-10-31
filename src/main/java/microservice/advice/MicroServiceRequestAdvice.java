@@ -7,8 +7,6 @@ import microservice.context.MicroServiceContext;
 import microservice.exception.NoClientIDException;
 import microservice.exception.NoRequestIDException;
 import microservice.templates.MicroServiceRequest;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
