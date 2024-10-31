@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'org.senna'
-version = '0.0.11'
+version = '0.0.13-beta'
 
 repositories {
     mavenCentral()
@@ -27,7 +27,7 @@ mavenPublishing {
     signAllPublications()
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
-    coordinates("io.github.soyesenna", "rest-microservice", "0.0.11")
+    coordinates("io.github.soyesenna", "rest-microservice", "0.0.13-beta")
 
     pom {
         name = 'rest-microservice'
@@ -87,13 +87,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework/spring-webmvc
     implementation group: 'org.springframework', name: 'spring-webmvc', version: '6.1.13'
 
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.3.2'
-
+    // https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
+    implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '8.0.1.Final'
 
     // https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
     implementation group: 'jakarta.validation', name: 'jakarta.validation-api', version: '3.1.0'
-
 }
 
 test {

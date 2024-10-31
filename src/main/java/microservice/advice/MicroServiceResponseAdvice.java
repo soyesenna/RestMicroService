@@ -1,8 +1,8 @@
 package microservice.advice;
 
+import java.lang.annotation.Annotation;
+import microservice.annotations.MicroServiceIgnore;
 import microservice.config.MicroServiceConfig;
-import microservice.constants.ConstantStrings;
-import microservice.context.MicroServiceContext;
 import microservice.templates.MicroServiceResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -23,20 +23,16 @@ public class MicroServiceResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        if (MicroServiceContext.isContextEmpty()) {
-            return false;
+        Annotation[] methodAnnotations = returnType.getMethodAnnotations();
+        for (Annotation methodAnnotation : methodAnnotations) {
+            if (methodAnnotation.annotationType().equals(MicroServiceIgnore.class)) {
+                return false;
+            }
         }
 
-        boolean isClient = MicroServiceContext.getClientId().equals(ConstantStrings.API_CLIENT_ID);
-
-        boolean isSupport = false;
-
-        if (!isClient) {
-            isSupport = !MicroServiceResponse.class.isAssignableFrom(returnType.getParameterType());
-        }
-
-        return isSupport;
+        return !MicroServiceResponse.class.isAssignableFrom(returnType.getParameterType());
     }
+
 
     @Override
     public Object beforeBodyWrite(Object body, 
