@@ -19,7 +19,7 @@ public record MicroServiceRequest<T>(
     String timestamp,
     @Valid
     T payload,
-    Map<String, String> metadata
+    Map<String, Object> metadata
 ) {
 
   public MicroServiceRequest {
@@ -50,7 +50,7 @@ public record MicroServiceRequest<T>(
     );
   }
 
-  public static  <T> MicroServiceRequest<T> createRequest(String requestId, T payload, Map<String, String> metadata) {
+  public static  <T> MicroServiceRequest<T> createRequest(String requestId, T payload, Map<String, Object> metadata) {
     return new MicroServiceRequest<>(
         requestId,
         MicroServiceContext.getMyClientId(),

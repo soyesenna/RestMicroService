@@ -39,15 +39,15 @@ public class MicroServiceContext {
         return (String) CONTEXT.get().get(ContextKey.MY_CLIENT_ID);
     }
 
-    public static void setMetaInfo(Map<String, String> metaInfo) {
+    public static void setMetaInfo(Map<String, Object> metaInfo) {
         if (CONTEXT.get() == null) {
             CONTEXT.set(new HashMap<>());
         }
         CONTEXT.get().put(ContextKey.META_INFO, metaInfo);
     }
 
-    public static Map<String, String> getMetaInfo() {
-        return (Map<String, String>) CONTEXT.get().get(ContextKey.META_INFO);
+    public static Map<String, Object> getMetaInfo() {
+        return (Map<String, Object>) CONTEXT.get().get(ContextKey.META_INFO);
     }
 
     public static boolean isContextEmpty() {
