@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MicroServiceContext {
-    private static final ThreadLocal<Map<ContextKey, String>> CONTEXT = new ThreadLocal<>();
+    private static final ThreadLocal<Map<ContextKey, Object>> CONTEXT = new ThreadLocal<>();
 
     public static void setRequestId(String requestId) {
         if (CONTEXT.get() == null) {
@@ -21,11 +21,11 @@ public class MicroServiceContext {
     }
 
     public static String getRequestId() {
-        return CONTEXT.get().get(ContextKey.REQUEST_ID);
+        return (String) CONTEXT.get().get(ContextKey.REQUEST_ID);
     }
 
     public static String getRootClientId() {
-        return CONTEXT.get().get(ContextKey.ROOT_CLIENT_ID);
+        return (String) CONTEXT.get().get(ContextKey.ROOT_CLIENT_ID);
     }
 
     public static void setMyClientId(String myClientId) {
@@ -36,7 +36,18 @@ public class MicroServiceContext {
     }
 
     public static String getMyClientId() {
-        return CONTEXT.get().get(ContextKey.MY_CLIENT_ID);
+        return (String) CONTEXT.get().get(ContextKey.MY_CLIENT_ID);
+    }
+
+    public static void setMetaInfo(Map<String, String> metaInfo) {
+        if (CONTEXT.get() == null) {
+            CONTEXT.set(new HashMap<>());
+        }
+        CONTEXT.get().put(ContextKey.META_INFO, metaInfo);
+    }
+
+    public static Map<String, String> getMetaInfo() {
+        return (Map<String, String>) CONTEXT.get().get(ContextKey.META_INFO);
     }
 
     public static boolean isContextEmpty() {

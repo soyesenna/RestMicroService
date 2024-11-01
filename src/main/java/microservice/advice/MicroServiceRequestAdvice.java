@@ -62,6 +62,7 @@ public class MicroServiceRequestAdvice extends RequestBodyAdviceAdapter {
     }
 
     MicroServiceContext.setMyClientId(this.microServiceConfig.getClientId());
+    MicroServiceContext.setMetaInfo(microServiceRequest.metadata());
 
     return microServiceRequest;
   }

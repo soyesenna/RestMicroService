@@ -47,7 +47,17 @@ public record MicroServiceRequest<T>(
         MicroServiceContext.getMyClientId(),
         LocalDateTime.now().toString(),
         payload,
-        null
+        MicroServiceContext.getMetaInfo()
+    );
+  }
+
+  public static  <T> MicroServiceRequest<T> createRequest(String requestId, T payload, Map<String, String> metadata) {
+    return new MicroServiceRequest<>(
+        requestId,
+        MicroServiceContext.getMyClientId(),
+        LocalDateTime.now().toString(),
+        payload,
+        metadata
     );
   }
 }
