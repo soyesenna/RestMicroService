@@ -24,12 +24,8 @@ public class MicroServiceExceptionHandler {
       errorStack = e.getErrorStack();
     }
 
-
     errorStack.add("In %s to %s : %s %s Request Failed".formatted(MicroServiceContext.getMyClientId(), e.getServiceName(),
         e.getHttpMethod().toString(), e.getRequestUrl()));
-
-    System.out.println(errorStack);
-
 
     return MicroServiceResponse.failure(errorStack, e.getErrorInfo());
   }
@@ -37,7 +33,7 @@ public class MicroServiceExceptionHandler {
   @ExceptionHandler(value = MicroServiceException.class)
   @ResponseStatus(HttpStatus.OK)
   public MicroServiceResponse<ErrorWrapper> handleMicroServiceException(MicroServiceException e) {
-    ErrorWrapper errorWrapper = new ErrorWrapper(e.getMessage(), e.getHttpStatus());
+    ErrorWrapper errorWrapper = new ErrorWrapper(e.getMessage(), e.getHttpStatus(), e.getErrorCode());
     return MicroServiceResponse.failure(errorWrapper);
   }
 }

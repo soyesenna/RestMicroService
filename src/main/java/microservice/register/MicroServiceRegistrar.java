@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import microservice.annotations.EnableMicroServices;
 import microservice.annotations.MicroService;
-import microservice.constants.ConstantStrings;
+import microservice.constants.Constants;
 import microservice.exception.MicroServiceCreateException;
 import microservice.factorybean.MicroServiceFactoryBean;
 import org.apache.commons.logging.Log;
@@ -30,7 +30,7 @@ public class MicroServiceRegistrar implements ImportBeanDefinitionRegistrar {
     assert attributes != null;
     String[] basePackages = (String[]) attributes.get("basePackages");
 
-   log.info("%s MicroService interfaces Scanning...".formatted(ConstantStrings.MICRO_SERVICE_LOG_PREFIX));
+   log.info("%s MicroService interfaces Scanning...".formatted(Constants.MICRO_SERVICE_LOG_PREFIX));
 
     if (basePackages == null || basePackages.length == 0) {
       basePackages = new String[] {
@@ -45,7 +45,7 @@ public class MicroServiceRegistrar implements ImportBeanDefinitionRegistrar {
 
     for (String basePackage : basePackages) {
       Set<BeanDefinition> candidateComponents = scanner.findCandidateComponents(basePackage);
-      log.info(ConstantStrings.MICRO_SERVICE_LOG_PREFIX + " Found " + candidateComponents.size() + " components in " + basePackage);
+      log.info(Constants.MICRO_SERVICE_LOG_PREFIX + " Found " + candidateComponents.size() + " components in " + basePackage);
 
       for (BeanDefinition bd : candidateComponents) {
         String className = bd.getBeanClassName();
@@ -57,10 +57,10 @@ public class MicroServiceRegistrar implements ImportBeanDefinitionRegistrar {
             beanDefinitionBuilder.addPropertyValue("serviceInterface", clazz);
             registry.registerBeanDefinition(
                 className, beanDefinitionBuilder.getBeanDefinition());
-            log.info("%s MicroService Bean created : ".formatted(ConstantStrings.MICRO_SERVICE_LOG_PREFIX) + className);
+            log.info("%s MicroService Bean created : ".formatted(Constants.MICRO_SERVICE_LOG_PREFIX) + className);
           }
         } catch (ClassNotFoundException e) {
-          log.error("%s Can NOT Create MicroService Bean. : ".formatted(ConstantStrings.MICRO_SERVICE_LOG_PREFIX) + e.getMessage());
+          log.error("%s Can NOT Create MicroService Bean. : ".formatted(Constants.MICRO_SERVICE_LOG_PREFIX) + e.getMessage());
           throw new MicroServiceCreateException("Can NOT Create MicroService Bean. : " + e.getMessage());
         }
       }

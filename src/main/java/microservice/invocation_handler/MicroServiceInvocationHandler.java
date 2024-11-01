@@ -1,6 +1,6 @@
 package microservice.invocation_handler;
 
-import static microservice.constants.ConstantStrings.MICRO_SERVICE_LOG_PREFIX;
+import static microservice.constants.Constants.MICRO_SERVICE_LOG_PREFIX;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
