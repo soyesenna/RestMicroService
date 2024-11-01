@@ -45,6 +45,6 @@ public class MicroServiceResponseAdvice implements ResponseBodyAdvice<Object> {
             return body;
         }
 
-        return MicroServiceResponse.success(body, microServiceConfig);
+        return MicroServiceResponse.success(body);
     }
 }

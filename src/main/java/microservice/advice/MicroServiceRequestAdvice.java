@@ -3,6 +3,7 @@ package microservice.advice;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import microservice.annotations.MicroServiceIgnore;
+import microservice.config.MicroServiceConfig;
 import microservice.context.MicroServiceContext;
 import microservice.exception.NoClientIDException;
 import microservice.exception.NoRequestIDException;
@@ -15,6 +16,12 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAd
 
 @RestControllerAdvice
 public class MicroServiceRequestAdvice extends RequestBodyAdviceAdapter {
+
+  private final MicroServiceConfig microServiceConfig;
+
+  public MicroServiceRequestAdvice(MicroServiceConfig microServiceConfig) {
+    this.microServiceConfig = microServiceConfig;
+  }
 
   @Override
   public boolean supports(MethodParameter methodParameter, Type targetType,
@@ -51,8 +58,10 @@ public class MicroServiceRequestAdvice extends RequestBodyAdviceAdapter {
     }
 
     if (clientId != null) {
-      MicroServiceContext.setClientId(clientId);
+      MicroServiceContext.setRootClientId(clientId);
     }
+
+    MicroServiceContext.setMyClientId(this.microServiceConfig.getClientId());
 
     return microServiceRequest;
   }

@@ -47,7 +47,7 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     String requestId = MicroServiceContext.getRequestId();
     Object requestPayload = (args != null && args.length > 0) ? args[0] : null;
-    MicroServiceRequest<?> request = MicroServiceRequest.createRequest(requestId, requestPayload, microServiceConfig);
+    MicroServiceRequest<?> request = MicroServiceRequest.createRequest(requestId, requestPayload);
 
     String requestJson = objectMapper.writeValueAsString(request);
 

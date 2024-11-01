@@ -2,7 +2,8 @@ package microservice.context;
 
 public enum ContextKey {
   REQUEST_ID("requestId"),
-  CLIENT_ID("clientId");
+  ROOT_CLIENT_ID("rootClientId"),
+  MY_CLIENT_ID("myClientId");
 
   private String value;
 

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import microservice.config.MicroServiceConfig;
+import microservice.context.MicroServiceContext;
 import microservice.exception.MicroServiceRequestPayloadValidationFailException;
 
 public record MicroServiceRequest<T>(
@@ -40,12 +41,10 @@ public record MicroServiceRequest<T>(
     }
   }
 
-  public static <T> MicroServiceRequest<T> createRequest(String requestId, T payload,
-      MicroServiceConfig microServiceConfig) {
-    String clientId = microServiceConfig.getClientId();
+  public static <T> MicroServiceRequest<T> createRequest(String requestId, T payload) {
     return new MicroServiceRequest<>(
         requestId,
-        clientId,
+        MicroServiceContext.getMyClientId(),
         LocalDateTime.now().toString(),
         payload,
         null
