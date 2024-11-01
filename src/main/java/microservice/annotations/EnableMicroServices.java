@@ -12,11 +12,12 @@ import microservice.config.MicroServiceWebConfig;
 import microservice.interceptors.MicroServiceInterceptor;
 import microservice.register.MicroServiceRegistrar;
 import org.springframework.context.annotation.Import;
+import microservice.exception.MicroServiceExceptionHandler;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import({ MicroServiceConfig.class, MicroServiceObjectMapperConfig.class, MicroServiceWebConfig.class, // Configuration
-     MicroServiceRequestAdvice.class, MicroServiceResponseAdvice.class, // Advice
+     MicroServiceRequestAdvice.class, MicroServiceResponseAdvice.class, MicroServiceExceptionHandler.class, // Advice
     MicroServiceInterceptor.class, MicroServiceRegistrar.class, // Beans
 })
 public @interface EnableMicroServices {

@@ -2,21 +2,21 @@ package microservice.invocation_handler;
 
 import static microservice.constants.ConstantStrings.MICRO_SERVICE_LOG_PREFIX;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import microservice.annotations.DeleteRequest;
-import microservice.annotations.GetRequest;
-import microservice.annotations.PatchRequest;
-import microservice.annotations.PostRequest;
-import microservice.annotations.PutRequest;
+import microservice.annotations.MicroServiceMethod;
 import microservice.config.MicroServiceConfig;
 import microservice.context.MicroServiceContext;
+import microservice.exception.IllegalMicroServiceMethodException;
 import microservice.exception.MicroServiceNotResponseException;
+import microservice.exception.MicroServiceRequestFailException;
 import microservice.exception.NotDefinitionServiceUrlException;
 import microservice.templates.MicroServiceRequest;
 import microservice.templates.MicroServiceResponse;
+import microservice.templates.dtos.ErrorWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpMethod;
@@ -51,13 +51,50 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
 
     String requestJson = objectMapper.writeValueAsString(request);
 
-    ResponseEntity<String> responseEntity = this.doRequest(method, requestJson);
+    String uri = this.microServiceConfig.getUrls().get(serviceName);
+    if (uri == null) {
+      throw new NotDefinitionServiceUrlException(serviceName);
+    }
+    HttpMethod httpMethod;
+
+    if (method.isAnnotationPresent(MicroServiceMethod.class)) {
+      MicroServiceMethod microServiceMethod = method.getAnnotation(MicroServiceMethod.class);
+      httpMethod = HttpMethod.valueOf(microServiceMethod.httpMethod().toUpperCase());
+      uri += microServiceMethod.path();
+    }
+    else {
+      throw new IllegalMicroServiceMethodException(serviceName);
+    }
+
+    ResponseEntity<String> responseEntity = RestClient.create()
+        .method(httpMethod)
+        .uri(uri)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(requestJson)
+        .retrieve()
+        .toEntity(String.class);
+
+    log.info("%s MicroService send Request To : %s".formatted(MICRO_SERVICE_LOG_PREFIX, uri));
 
     try {
       String responseBody = responseEntity.getBody();
       if (responseBody == null) {
-        throw new MicroServiceNotResponseException(serviceName);
+        throw new MicroServiceNotResponseException(uri);
       }
+
+      MicroServiceResponse<ErrorWrapper> errorWrapperMicroServiceResponse = this.checkResponseIsFail(
+          responseBody);
+
+      if (errorWrapperMicroServiceResponse != null) {
+        throw new MicroServiceRequestFailException(
+            errorWrapperMicroServiceResponse.errorStack(),
+            httpMethod,
+            uri,
+            errorWrapperMicroServiceResponse.payload(),
+            serviceName
+        );
+      }
+
       JavaType type = objectMapper.getTypeFactory().constructParametricType(
           MicroServiceResponse.class,
           method.getReturnType()
@@ -65,46 +102,23 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
       MicroServiceResponse<?> microServiceResponse = objectMapper.readValue(responseBody, type);
       return microServiceResponse.payload();
     } catch (NullPointerException e) {
-      throw new MicroServiceNotResponseException(serviceName);
+      throw new MicroServiceNotResponseException(uri);
     }
   }
 
-  private ResponseEntity<String> doRequest(Method method, String requestJson) {
-    String uri = this.microServiceConfig.getUrls().get(serviceName);
-    if (uri == null) {
-      throw new NotDefinitionServiceUrlException(serviceName);
+  private MicroServiceResponse<ErrorWrapper> checkResponseIsFail(String responseBody) {
+    MicroServiceResponse<ErrorWrapper> errorWrapperMicroServiceResponse = null;
+    try {
+      JavaType errorType = objectMapper.getTypeFactory().constructParametricType(
+          MicroServiceResponse.class,
+          ErrorWrapper.class
+      );
+      errorWrapperMicroServiceResponse = objectMapper.readValue(responseBody,
+          errorType);
+    }catch (JsonProcessingException e) {
+      log.info("%s MicroService Request Success".formatted(MICRO_SERVICE_LOG_PREFIX));
     }
-    RequestHeadersSpec<?> requestHeadersSpec;
-
-    if (method.isAnnotationPresent(GetRequest.class)) {
-      uri += method.getAnnotation(GetRequest.class).value();
-      requestHeadersSpec = this.buildRequestBodySpec(HttpMethod.GET, requestJson, uri);
-
-    } else if (method.isAnnotationPresent(PostRequest.class)) {
-      uri += method.getAnnotation(PostRequest.class).value();
-      requestHeadersSpec = this.buildRequestBodySpec(HttpMethod.POST, requestJson, uri);
-
-    } else if (method.isAnnotationPresent(PatchRequest.class)) {
-      uri += method.getAnnotation(PatchRequest.class).value();
-      requestHeadersSpec = this.buildRequestBodySpec(HttpMethod.PATCH, requestJson, uri);
-
-    } else if (method.isAnnotationPresent(DeleteRequest.class)) {
-      uri += method.getAnnotation(DeleteRequest.class).value();
-      requestHeadersSpec = this.buildRequestBodySpec(HttpMethod.DELETE, requestJson, uri);
-
-    } else if (method.isAnnotationPresent(PutRequest.class)) {
-      uri += method.getAnnotation(PutRequest.class).value();
-      requestHeadersSpec = this.buildRequestBodySpec(HttpMethod.PUT, requestJson, uri);
-
-    }
-    else {
-      throw new UnsupportedOperationException("Not Supported HTTP Method.");
-    }
-
-    ResponseEntity<String> responseEntity = requestHeadersSpec.retrieve().toEntity(String.class);
-    log.info("%s MicroService send Request To : %s".formatted(MICRO_SERVICE_LOG_PREFIX, uri));
-
-    return responseEntity;
+    return errorWrapperMicroServiceResponse;
   }
 
   private RequestHeadersSpec<?> buildRequestBodySpec(HttpMethod method, String requestJson, String uri) {

@@ -9,7 +9,7 @@ public class MicroServiceRequestPayloadValidationFailException extends MicroServ
 
   public MicroServiceRequestPayloadValidationFailException(List<String> errorMessages) {
     super(ConstantStrings.MICRO_SERVICE_LOG_PREFIX + " Validation failed for payload: "
-        + errorMessages);
+        + errorMessages, 200);
     this.errorMessages = errorMessages;
   }
 

@@ -1,16 +1,17 @@
 package microservice.templates;
 
 import java.time.LocalDateTime;
-import microservice.config.MicroServiceConfig;
+import java.util.List;
 import microservice.context.MicroServiceContext;
-import microservice.templates.dtos.ErrorInfo;
+import microservice.templates.dtos.ErrorWrapper;
 
 public record MicroServiceResponse<T>(
     String requestId,
     String clientId,
     String timestamp,
     Boolean success,
-    T payload
+    T payload,
+    List<String> errorStack
 ) {
 
   public static <T> MicroServiceResponse<T> success(T payload) {
@@ -19,27 +20,30 @@ public record MicroServiceResponse<T>(
         MicroServiceContext.getMyClientId(),
         LocalDateTime.now().toString(),
         true,
-        payload
+        payload,
+        null
     );
   }
 
-  public static MicroServiceResponse<ErrorInfo> failure(ErrorInfo errorInfo) {
+  public static MicroServiceResponse<ErrorWrapper> failure(ErrorWrapper errorWrapper) {
     return new MicroServiceResponse<>(
         MicroServiceContext.getRequestId(),
         MicroServiceContext.getMyClientId(),
         LocalDateTime.now().toString(),
         false,
-        errorInfo
+        errorWrapper,
+        null
     );
   }
 
-  public static <T> MicroServiceResponse<T> failure(T failPayload) {
+  public static MicroServiceResponse<ErrorWrapper> failure(List<String> errorStack, ErrorWrapper errorWrapper) {
     return new MicroServiceResponse<>(
         MicroServiceContext.getRequestId(),
         MicroServiceContext.getMyClientId(),
         LocalDateTime.now().toString(),
         false,
-        failPayload
+        errorWrapper,
+        errorStack
     );
   }
 }

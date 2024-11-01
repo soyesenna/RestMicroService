@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface DeleteRequest {
-    String value() default "";
+public @interface MicroServiceMethod {
+  String httpMethod() default "GET";
+  String path() default "";
 }
