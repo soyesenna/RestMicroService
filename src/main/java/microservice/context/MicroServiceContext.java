@@ -1,7 +1,10 @@
 package microservice.context;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import microservice.templates.dtos.SetCookieWrapper;
 
 public class MicroServiceContext {
     private static final ThreadLocal<Map<ContextKey, Object>> CONTEXT = new ThreadLocal<>();
@@ -64,18 +67,28 @@ public class MicroServiceContext {
         return null;
     }
 
-    public static void setSetCookies(Map<String, String> setCookies) {
+    public static void setSetCookies(List<SetCookieWrapper> setCookies) {
         if (CONTEXT.get() == null) {
             CONTEXT.set(new HashMap<>());
         }
         CONTEXT.get().put(ContextKey.SET_COOKIES, setCookies);
     }
 
-    public static Map<String, String> getSetCookies() {
+    public static List<SetCookieWrapper> getSetCookies() {
         if (CONTEXT.get().containsKey(ContextKey.SET_COOKIES)) {
-            return (Map<String, String>) CONTEXT.get().get(ContextKey.SET_COOKIES);
+            return (List<SetCookieWrapper>) CONTEXT.get().get(ContextKey.SET_COOKIES);
         }
         return null;
+    }
+
+    public static void addSetCookies(SetCookieWrapper setCookies) {
+        if (CONTEXT.get() == null) {
+            CONTEXT.set(new HashMap<>());
+        }
+        if (!CONTEXT.get().containsKey(ContextKey.SET_COOKIES)) {
+            CONTEXT.get().put(ContextKey.SET_COOKIES, new ArrayList<>());
+        }
+        ((List<SetCookieWrapper>) CONTEXT.get().get(ContextKey.SET_COOKIES)).add(setCookies);
     }
 
     public static boolean isContextEmpty() {

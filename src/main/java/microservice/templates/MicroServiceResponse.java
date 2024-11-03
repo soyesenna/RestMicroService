@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import microservice.context.MicroServiceContext;
 import microservice.templates.dtos.ErrorWrapper;
+import microservice.templates.dtos.SetCookieWrapper;
 
 public record MicroServiceResponse<T>(
     String requestId,
@@ -15,18 +16,23 @@ public record MicroServiceResponse<T>(
     T payload,
     List<String> errorStack,
     Integer httpStatusCode,
-    Map<String, String> setCookies
+    List<SetCookieWrapper> setCookies
 ) {
 
-  public static void setCookies(Map<String, String> setCookies) {
+  public static void setCookies(List<SetCookieWrapper> setCookies) {
     MicroServiceContext.setSetCookies(setCookies);
+  }
+
+  public static void addCookies(String name, String value, Long maxAge) {
+    SetCookieWrapper setCookieWrapper = new SetCookieWrapper(name, value, maxAge);
+    MicroServiceContext.addSetCookies(setCookieWrapper);
   }
 
   public static void setHttpStatusCode(Integer httpStatusCode) {
     MicroServiceContext.setHttpStatus(httpStatusCode);
   }
 
-  public static <T> MicroServiceResponse<T> success(T payload, Integer httpStatusCode, Map<String, String> setCookies) {
+  public static <T> MicroServiceResponse<T> success(T payload, Integer httpStatusCode, List<SetCookieWrapper> setCookies) {
     return new MicroServiceResponse<>(
         MicroServiceContext.getRequestId(),
         MicroServiceContext.getMyClientId(),
