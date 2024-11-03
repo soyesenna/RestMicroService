@@ -50,6 +50,34 @@ public class MicroServiceContext {
         return (Map<String, Object>) CONTEXT.get().get(ContextKey.META_INFO);
     }
 
+    public static void setHttpStatus(int httpStatus) {
+        if (CONTEXT.get() == null) {
+            CONTEXT.set(new HashMap<>());
+        }
+        CONTEXT.get().put(ContextKey.HTTP_STATUS, httpStatus);
+    }
+
+    public static Integer getHttpStatus() {
+        if (CONTEXT.get().containsKey(ContextKey.HTTP_STATUS)) {
+            return (Integer) CONTEXT.get().get(ContextKey.HTTP_STATUS);
+        }
+        return null;
+    }
+
+    public static void setSetCookies(Map<String, String> setCookies) {
+        if (CONTEXT.get() == null) {
+            CONTEXT.set(new HashMap<>());
+        }
+        CONTEXT.get().put(ContextKey.SET_COOKIES, setCookies);
+    }
+
+    public static Map<String, String> getSetCookies() {
+        if (CONTEXT.get().containsKey(ContextKey.SET_COOKIES)) {
+            return (Map<String, String>) CONTEXT.get().get(ContextKey.SET_COOKIES);
+        }
+        return null;
+    }
+
     public static boolean isContextEmpty() {
         return CONTEXT.get() == null;
     }

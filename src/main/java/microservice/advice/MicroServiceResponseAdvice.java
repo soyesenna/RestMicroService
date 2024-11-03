@@ -1,8 +1,10 @@
 package microservice.advice;
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
 import microservice.annotations.MicroServiceIgnore;
 import microservice.config.MicroServiceConfig;
+import microservice.context.MicroServiceContext;
 import microservice.templates.MicroServiceResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -45,6 +47,9 @@ public class MicroServiceResponseAdvice implements ResponseBodyAdvice<Object> {
             return body;
         }
 
-        return MicroServiceResponse.success(body);
+        Integer httpStatusCode = MicroServiceContext.getHttpStatus();
+        Map<String, String> setCookies = MicroServiceContext.getSetCookies();
+
+        return MicroServiceResponse.success(body, httpStatusCode, setCookies);
     }
 }

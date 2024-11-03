@@ -1,7 +1,9 @@
 package microservice.templates;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import microservice.context.MicroServiceContext;
 import microservice.templates.dtos.ErrorWrapper;
 
@@ -11,17 +13,29 @@ public record MicroServiceResponse<T>(
     String timestamp,
     Boolean success,
     T payload,
-    List<String> errorStack
+    List<String> errorStack,
+    Integer httpStatusCode,
+    Map<String, String> setCookies
 ) {
 
-  public static <T> MicroServiceResponse<T> success(T payload) {
+  public static void setCookies(Map<String, String> setCookies) {
+    MicroServiceContext.setSetCookies(setCookies);
+  }
+
+  public static void setHttpStatusCode(Integer httpStatusCode) {
+    MicroServiceContext.setHttpStatus(httpStatusCode);
+  }
+
+  public static <T> MicroServiceResponse<T> success(T payload, Integer httpStatusCode, Map<String, String> setCookies) {
     return new MicroServiceResponse<>(
         MicroServiceContext.getRequestId(),
         MicroServiceContext.getMyClientId(),
         LocalDateTime.now().toString(),
         true,
         payload,
-        null
+        null,
+        httpStatusCode == null ? 200 : httpStatusCode,
+        setCookies
     );
   }
 
@@ -32,6 +46,8 @@ public record MicroServiceResponse<T>(
         LocalDateTime.now().toString(),
         false,
         errorWrapper,
+        null,
+        errorWrapper.httpStatusCode(),
         null
     );
   }
@@ -43,7 +59,9 @@ public record MicroServiceResponse<T>(
         LocalDateTime.now().toString(),
         false,
         errorWrapper,
-        errorStack
+        errorStack,
+        errorWrapper.httpStatusCode(),
+        null
     );
   }
 }
