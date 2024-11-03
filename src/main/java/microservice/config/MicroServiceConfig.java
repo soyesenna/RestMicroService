@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "microservice")
-@Component
+@Component("microServiceConfig")
 public class MicroServiceConfig {
 
     private String clientId;

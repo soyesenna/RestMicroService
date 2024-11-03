@@ -49,14 +49,22 @@ public class MicroServiceRegistrar implements ImportBeanDefinitionRegistrar {
 
       for (BeanDefinition bd : candidateComponents) {
         String className = bd.getBeanClassName();
+
         try {
           Class<?> clazz = Class.forName(className);
           if (clazz.isInterface()) {
             BeanDefinitionBuilder beanDefinitionBuilder =
                 BeanDefinitionBuilder.genericBeanDefinition(MicroServiceFactoryBean.class);
             beanDefinitionBuilder.addPropertyValue("serviceInterface", clazz);
-            registry.registerBeanDefinition(
-                className, beanDefinitionBuilder.getBeanDefinition());
+            beanDefinitionBuilder.addConstructorArgReference("microServiceConfig");
+            beanDefinitionBuilder.addConstructorArgReference("microServiceObjectMapper");
+            beanDefinitionBuilder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+            beanDefinitionBuilder.setPrimary(true);
+            beanDefinitionBuilder.setLazyInit(true);
+            beanDefinitionBuilder.setScope(BeanDefinition.SCOPE_SINGLETON);
+            beanDefinitionBuilder.addDependsOn("microServiceConfig");
+            beanDefinitionBuilder.addDependsOn("microServiceObjectMapper");
+
             log.info("%s MicroService Bean created : ".formatted(Constants.MICRO_SERVICE_LOG_PREFIX) + className);
           }
         } catch (ClassNotFoundException e) {
