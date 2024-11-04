@@ -11,6 +11,7 @@ import microservice.annotations.MicroServiceMethod;
 import microservice.config.MicroServiceConfig;
 import microservice.context.MicroServiceContext;
 import microservice.exception.IllegalMicroServiceMethodException;
+import microservice.exception.IllegalMicroServiceResponseException;
 import microservice.exception.MicroServiceNotResponseException;
 import microservice.exception.MicroServiceRequestFailException;
 import microservice.exception.NotDefinitionServiceUrlException;
@@ -78,19 +79,21 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
 
     try {
       String responseBody = responseEntity.getBody();
+      log.info("%s MicroService Response from %s -> %s".formatted(MICRO_SERVICE_LOG_PREFIX, uri,
+          responseBody));
       if (responseBody == null) {
         throw new MicroServiceNotResponseException(uri);
       }
 
-      MicroServiceResponse<ErrorWrapper> errorWrapperMicroServiceResponse = this.checkResponseIsFail(
+      MicroServiceResponse<?> genericMicroServiceResponse = this.getGenericMicroServiceResponse(
           responseBody);
 
-      if (errorWrapperMicroServiceResponse != null) {
+      if (!genericMicroServiceResponse.success()) {
         throw new MicroServiceRequestFailException(
-            errorWrapperMicroServiceResponse.errorStack(),
+            genericMicroServiceResponse.errorStack(),
             httpMethod,
             uri,
-            errorWrapperMicroServiceResponse.payload(),
+            (ErrorWrapper) genericMicroServiceResponse.payload(),
             serviceName
         );
       }
@@ -106,19 +109,15 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
     }
   }
 
-  private MicroServiceResponse<ErrorWrapper> checkResponseIsFail(String responseBody) {
-    MicroServiceResponse<ErrorWrapper> errorWrapperMicroServiceResponse = null;
+  private MicroServiceResponse<?> getGenericMicroServiceResponse(String responseBody) {
+    ObjectMapper objectMapper = new ObjectMapper();
     try {
-      JavaType errorType = objectMapper.getTypeFactory().constructParametricType(
-          MicroServiceResponse.class,
-          ErrorWrapper.class
-      );
-      errorWrapperMicroServiceResponse = objectMapper.readValue(responseBody,
-          errorType);
+      return objectMapper.readValue(responseBody, MicroServiceResponse.class);
     }catch (JsonProcessingException e) {
-      log.info("%s MicroService Request Success".formatted(MICRO_SERVICE_LOG_PREFIX));
+      log.error("%s Can NOT deserialize response to MicroServiceResponse".formatted(
+          MICRO_SERVICE_LOG_PREFIX));
+      throw new IllegalMicroServiceResponseException("Sent body -> %s".formatted(responseBody), 500);
     }
-    return errorWrapperMicroServiceResponse;
   }
 
   private RequestHeadersSpec<?> buildRequestBodySpec(HttpMethod method, String requestJson, String uri) {

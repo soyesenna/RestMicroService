@@ -60,10 +60,11 @@ public class MicroServiceRegistrar implements ImportBeanDefinitionRegistrar {
             beanDefinitionBuilder.addConstructorArgReference("microServiceObjectMapper");
             beanDefinitionBuilder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
             beanDefinitionBuilder.setPrimary(true);
-            beanDefinitionBuilder.setLazyInit(true);
             beanDefinitionBuilder.setScope(BeanDefinition.SCOPE_SINGLETON);
             beanDefinitionBuilder.addDependsOn("microServiceConfig");
             beanDefinitionBuilder.addDependsOn("microServiceObjectMapper");
+
+            registry.registerBeanDefinition(className, beanDefinitionBuilder.getBeanDefinition());
 
             log.info("%s MicroService Bean created : ".formatted(Constants.MICRO_SERVICE_LOG_PREFIX) + className);
           }
