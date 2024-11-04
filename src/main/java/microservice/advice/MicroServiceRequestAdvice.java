@@ -4,10 +4,14 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import microservice.annotations.MicroServiceIgnore;
 import microservice.config.MicroServiceConfig;
+import microservice.constants.Constants;
 import microservice.context.MicroServiceContext;
 import microservice.exception.NoClientIDException;
 import microservice.exception.NoRequestIDException;
+import microservice.invocation_handler.MicroServiceInvocationHandler;
 import microservice.templates.MicroServiceRequest;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -16,6 +20,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAd
 
 @RestControllerAdvice
 public class MicroServiceRequestAdvice extends RequestBodyAdviceAdapter {
+
+  private static final Log log = LogFactory.getLog(MicroServiceRequestAdvice.class);
+
 
   private final MicroServiceConfig microServiceConfig;
 
@@ -63,6 +70,8 @@ public class MicroServiceRequestAdvice extends RequestBodyAdviceAdapter {
 
     MicroServiceContext.setMyClientId(this.microServiceConfig.getClientId());
     MicroServiceContext.setMetaInfo(microServiceRequest.metadata());
+
+    log.info("%s MicroServiceRequest -> %s".formatted(Constants.MICRO_SERVICE_LOG_PREFIX, microServiceRequest.toString()));
 
     return microServiceRequest;
   }
