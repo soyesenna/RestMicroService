@@ -24,7 +24,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClient.RequestHeadersSpec;
 
 public class MicroServiceInvocationHandler implements InvocationHandler {
 
@@ -62,8 +61,7 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
       MicroServiceMethod microServiceMethod = method.getAnnotation(MicroServiceMethod.class);
       httpMethod = HttpMethod.valueOf(microServiceMethod.httpMethod().toUpperCase());
       uri += microServiceMethod.path();
-    }
-    else {
+    } else {
       throw new IllegalMicroServiceMethodException(serviceName);
     }
 
@@ -102,6 +100,7 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
           MicroServiceResponse.class,
           method.getReturnType()
       );
+
       MicroServiceResponse<?> microServiceResponse = objectMapper.readValue(responseBody, type);
       return microServiceResponse.payload();
     } catch (NullPointerException e) {
@@ -113,18 +112,11 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
     ObjectMapper objectMapper = new ObjectMapper();
     try {
       return objectMapper.readValue(responseBody, MicroServiceResponse.class);
-    }catch (JsonProcessingException e) {
+    } catch (JsonProcessingException e) {
       log.error("%s Can NOT deserialize response to MicroServiceResponse".formatted(
           MICRO_SERVICE_LOG_PREFIX));
-      throw new IllegalMicroServiceResponseException("Sent body -> %s".formatted(responseBody), 500);
+      throw new IllegalMicroServiceResponseException("Sent body -> %s".formatted(responseBody),
+          500);
     }
-  }
-
-  private RequestHeadersSpec<?> buildRequestBodySpec(HttpMethod method, String requestJson, String uri) {
-    return restClient
-        .method(method)
-        .uri(uri)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(requestJson);
   }
 }
