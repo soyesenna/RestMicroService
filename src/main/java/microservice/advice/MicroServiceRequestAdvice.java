@@ -1,11 +1,19 @@
 package microservice.advice;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import microservice.annotations.MicroServiceIgnore;
 import microservice.config.MicroServiceConfig;
 import microservice.constants.Constants;
 import microservice.context.MicroServiceContext;
+import microservice.exception.MicroServiceRequestPayloadValidationFailException;
 import microservice.exception.NoClientIDException;
 import microservice.exception.NoRequestIDException;
 import microservice.invocation_handler.MicroServiceInvocationHandler;
@@ -74,6 +82,25 @@ public class MicroServiceRequestAdvice extends RequestBodyAdviceAdapter {
     log.info("%s MicroServiceRequest -> %s".formatted(Constants.MICRO_SERVICE_LOG_PREFIX, microServiceRequest.toString()));
 
     return microServiceRequest;
+  }
+
+  private <T> void validateMicroServiceRequest(MicroServiceRequest<T> request) {
+    T payload = request.payload();
+    if (payload != null) {
+      Validator validator;
+      try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+        validator = factory.getValidator();
+        Set<ConstraintViolation<T>> violations = validator.validate(payload);
+
+        if (!violations.isEmpty()) {
+          List<String> errorMessages = violations.stream()
+              .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
+              .collect(Collectors.toList());
+
+          throw new MicroServiceRequestPayloadValidationFailException(errorMessages);
+        }
+      }
+    }
   }
 
   @Override
