@@ -1,17 +1,9 @@
 package microservice.templates;
 
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import microservice.context.MicroServiceContext;
-import microservice.exception.MicroServiceRequestPayloadValidationFailException;
 
 public record MicroServiceRequest<T>(
     String requestId,
@@ -50,7 +42,8 @@ public record MicroServiceRequest<T>(
     );
   }
 
-  public static  <T> MicroServiceRequest<T> createRequest(String requestId, T payload, Map<String, Object> metadata) {
+  public static <T> MicroServiceRequest<T> createRequest(String requestId, T payload,
+      Map<String, Object> metadata) {
     return new MicroServiceRequest<>(
         requestId,
         MicroServiceContext.getMyClientId(),

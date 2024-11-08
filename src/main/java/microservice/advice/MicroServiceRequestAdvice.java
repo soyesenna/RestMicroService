@@ -16,7 +16,6 @@ import microservice.context.MicroServiceContext;
 import microservice.exception.MicroServiceRequestPayloadValidationFailException;
 import microservice.exception.NoClientIDException;
 import microservice.exception.NoRequestIDException;
-import microservice.invocation_handler.MicroServiceInvocationHandler;
 import microservice.templates.MicroServiceRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -76,16 +75,20 @@ public class MicroServiceRequestAdvice extends RequestBodyAdviceAdapter {
       MicroServiceContext.setRootClientId(clientId);
     }
 
+    MicroServiceContext.setHttpStatus(200);
     MicroServiceContext.setMyClientId(this.microServiceConfig.getClientId());
     MicroServiceContext.setMetaInfo(microServiceRequest.metadata());
 
-    log.info("%s MicroServiceRequest -> %s".formatted(Constants.MICRO_SERVICE_LOG_PREFIX, microServiceRequest.toString()));
+    log.info("%s MicroServiceRequest -> %s".formatted(Constants.MICRO_SERVICE_LOG_PREFIX,
+        microServiceRequest.toString()));
+
+    this.validateRequest(microServiceRequest);
 
     return microServiceRequest;
   }
 
-  private <T> void validateMicroServiceRequest(MicroServiceRequest<T> request) {
-    T payload = request.payload();
+  private <T> void validateRequest(MicroServiceRequest<T> microServiceRequest) {
+    T payload = microServiceRequest.payload();
     if (payload != null) {
       Validator validator;
       try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
