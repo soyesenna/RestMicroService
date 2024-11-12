@@ -2,6 +2,7 @@ package microservice.exception;
 
 import java.util.ArrayList;
 import java.util.List;
+import microservice.constants.Constants;
 import microservice.context.MicroServiceContext;
 import microservice.templates.MicroServiceResponse;
 import microservice.templates.dtos.ErrorWrapper;
@@ -23,6 +24,8 @@ public class MicroServiceExceptionHandler {
   @ResponseStatus(HttpStatus.OK)
   public MicroServiceResponse<ErrorWrapper> handleMicroServiceRequestFailException(
       MicroServiceRequestFailException e) {
+    log.error("%s MicroServiceRequestFailException : ".formatted(Constants.MICRO_SERVICE_LOG_PREFIX) + e.getMessage());
+
     List<String> errorStack;
     if (e.getErrorStack() == null) {
       errorStack = new ArrayList<>();
@@ -41,7 +44,7 @@ public class MicroServiceExceptionHandler {
   @ExceptionHandler(value = MicroServiceException.class)
   @ResponseStatus(HttpStatus.OK)
   public MicroServiceResponse<ErrorWrapper> handleMicroServiceException(MicroServiceException e) {
-    log.info("MicroServiceException : " + e.getMessage());
+    log.error("%s MicroServiceException : ".formatted(Constants.MICRO_SERVICE_LOG_PREFIX) + e.getMessage());
     ErrorWrapper errorWrapper = new ErrorWrapper(e.getMessage(), e.getHttpStatus(),
         e.getErrorCode());
     return MicroServiceResponse.failure(errorWrapper);
@@ -51,7 +54,7 @@ public class MicroServiceExceptionHandler {
   @ResponseStatus(HttpStatus.OK)
   public MicroServiceResponse<ErrorWrapper> handleMicroServiceRequestPayloadValidationFailException(
       MicroServiceRequestPayloadValidationFailException e) {
-    log.info("MicroServiceRequestPayloadValidationFailException : " + e.getMessage());
+    log.error("%s MicroServiceRequestPayloadValidationFailException : ".formatted(Constants.MICRO_SERVICE_LOG_PREFIX) + e.getMessage());
     ErrorWrapper errorWrapper = new ErrorWrapper(e.getMessage(), e.getHttpStatus(),
         e.getErrorCode());
     return MicroServiceResponse.failure(errorWrapper);

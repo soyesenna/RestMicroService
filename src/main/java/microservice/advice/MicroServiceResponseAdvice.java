@@ -7,6 +7,7 @@ import microservice.annotations.MicroServiceIgnore;
 import microservice.config.MicroServiceConfig;
 import microservice.constants.Constants;
 import microservice.context.MicroServiceContext;
+import microservice.exception.MicroServiceResponseMappingException;
 import microservice.templates.MicroServiceResponse;
 import microservice.templates.dtos.SetCookieWrapper;
 import org.apache.commons.logging.Log;
@@ -53,14 +54,26 @@ public class MicroServiceResponseAdvice implements ResponseBodyAdvice<Object> {
             return body;
         }
 
-        Integer httpStatusCode = MicroServiceContext.getHttpStatus();
-        List<SetCookieWrapper> setCookies = MicroServiceContext.getSetCookies();
+        log.info("%s Body before wrap to MicroServiceResponse -> %s".formatted(
+            Constants.MICRO_SERVICE_LOG_PREFIX, body));
 
-        MicroServiceResponse<Object> success = MicroServiceResponse.success(body, httpStatusCode,
-            setCookies);
+        try {
+            Integer httpStatusCode = MicroServiceContext.getHttpStatus();
+            List<SetCookieWrapper> setCookies = MicroServiceContext.getSetCookies();
 
-        log.info("%s Response success to Wrapping to MicroServiceResponse -> %s".formatted(
-            Constants.MICRO_SERVICE_LOG_PREFIX, success));
-        return success;
+            MicroServiceResponse<Object> success = MicroServiceResponse.success(body, httpStatusCode,
+                setCookies);
+
+            log.info("%s Response success to Wrapping to MicroServiceResponse -> %s".formatted(
+                Constants.MICRO_SERVICE_LOG_PREFIX, success));
+            return success;
+        } catch (Exception e) {
+            log.error("%s Response success to Wrapping to MicroServiceResponse failed -> %s".formatted(
+                Constants.MICRO_SERVICE_LOG_PREFIX, e.getMessage()), e);
+            throw new MicroServiceResponseMappingException(this.microServiceConfig.getClientId());
+        }
+        finally {
+            MicroServiceContext.clear();
+        }
     }
 }
