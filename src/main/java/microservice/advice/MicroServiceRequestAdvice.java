@@ -1,14 +1,19 @@
 package microservice.advice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import microservice.annotations.MicroServiceController;
 import microservice.annotations.MicroServiceIgnore;
 import microservice.config.MicroServiceConfig;
 import microservice.constants.Constants;
@@ -20,16 +25,16 @@ import microservice.templates.MicroServiceRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 
-@RestControllerAdvice
+@RestControllerAdvice(annotations = MicroServiceController.class)
 public class MicroServiceRequestAdvice extends RequestBodyAdviceAdapter {
 
   private static final Log log = LogFactory.getLog(MicroServiceRequestAdvice.class);
-
 
   private final MicroServiceConfig microServiceConfig;
 
@@ -43,18 +48,21 @@ public class MicroServiceRequestAdvice extends RequestBodyAdviceAdapter {
     Annotation[] methodAnnotations = methodParameter.getMethodAnnotations();
     for (Annotation methodAnnotation : methodAnnotations) {
       if (methodAnnotation.annotationType().equals(MicroServiceIgnore.class)) {
+        log.info("%s MicroServiceIgnore annotation found, skipping MicroServiceRequestAdvice".formatted(Constants.MICRO_SERVICE_LOG_PREFIX));
         return false;
       }
     }
 
-    return MicroServiceRequest.class.isAssignableFrom(methodParameter.getParameterType());
+    log.info("%s MicroServiceRequestAdvice supports to type -> [%s]".formatted(Constants.MICRO_SERVICE_LOG_PREFIX, targetType.getTypeName()));
+    return true;
   }
 
   @Override
-  public Object afterBodyRead(Object body, HttpInputMessage inputMessage,
-      MethodParameter parameter, Type targetType,
-      Class<? extends HttpMessageConverter<?>> converterType) {
-    MicroServiceRequest<?> microServiceRequest = (MicroServiceRequest<?>) body;
+  public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter,
+      Type targetType, Class<? extends HttpMessageConverter<?>> converterType) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    MicroServiceRequest<?> microServiceRequest = objectMapper.readValue(inputMessage.getBody(),
+        MicroServiceRequest.class);
 
     String requestId = microServiceRequest.requestId();
     String clientId = microServiceRequest.clientId();
@@ -82,18 +90,32 @@ public class MicroServiceRequestAdvice extends RequestBodyAdviceAdapter {
     log.info("%s MicroServiceRequest -> %s".formatted(Constants.MICRO_SERVICE_LOG_PREFIX,
         microServiceRequest.toString()));
 
-    this.validateRequest(microServiceRequest);
+    return new HttpInputMessage() {
+      @Override
+      public InputStream getBody() throws IOException {
+        return new ByteArrayInputStream(objectMapper.writeValueAsBytes(microServiceRequest.payload()));
+      }
 
-    return microServiceRequest;
+      @Override
+      public HttpHeaders getHeaders() {
+        return inputMessage.getHeaders();
+      }
+    };
   }
 
-  private <T> void validateRequest(MicroServiceRequest<T> microServiceRequest) {
-    T payload = microServiceRequest.payload();
+  @Override
+  public Object afterBodyRead(Object body, HttpInputMessage inputMessage, MethodParameter parameter,
+      Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+    this.validateRequest(body);
+    return body;
+  }
+
+  private <T> void validateRequest(Object payload) {
     if (payload != null) {
       Validator validator;
       try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
         validator = factory.getValidator();
-        Set<ConstraintViolation<T>> violations = validator.validate(payload);
+        Set<ConstraintViolation<Object>> violations = validator.validate(payload);
 
         if (!violations.isEmpty()) {
           List<String> errorMessages = violations.stream()

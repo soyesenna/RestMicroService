@@ -87,22 +87,18 @@ public class MicroServiceInvocationHandler implements InvocationHandler {
           responseBody);
 
       if (!genericMicroServiceResponse.success()) {
+        ErrorWrapper errorWrapper = objectMapper.convertValue(genericMicroServiceResponse.payload(),
+            ErrorWrapper.class);
         throw new MicroServiceRequestFailException(
             genericMicroServiceResponse.errorStack(),
             httpMethod,
             uri,
-            (ErrorWrapper) genericMicroServiceResponse.payload(),
+            errorWrapper,
             serviceName
         );
       }
 
-      JavaType type = objectMapper.getTypeFactory().constructParametricType(
-          MicroServiceResponse.class,
-          method.getReturnType()
-      );
-
-      MicroServiceResponse<?> microServiceResponse = objectMapper.readValue(responseBody, type);
-      return microServiceResponse.payload();
+      return objectMapper.convertValue(genericMicroServiceResponse.payload(), method.getReturnType());
     } catch (NullPointerException e) {
       throw new MicroServiceNotResponseException(uri);
     }

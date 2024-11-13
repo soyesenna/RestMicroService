@@ -8,15 +8,17 @@ import microservice.advice.MicroServiceRequestAdvice;
 import microservice.advice.MicroServiceResponseAdvice;
 import microservice.config.MicroServiceConfig;
 import microservice.config.MicroServiceObjectMapperConfig;
+import microservice.config.MicroServiceWebConfig;
+import microservice.interceptor.MicroServiceInterceptor;
 import microservice.register.MicroServiceRegistrar;
 import org.springframework.context.annotation.Import;
 import microservice.exception.MicroServiceExceptionHandler;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import({ MicroServiceConfig.class, MicroServiceObjectMapperConfig.class, // Configuration
+@Import({ MicroServiceConfig.class, MicroServiceObjectMapperConfig.class, MicroServiceWebConfig.class, // Configuration
      MicroServiceRequestAdvice.class, MicroServiceResponseAdvice.class, MicroServiceExceptionHandler.class, // Advice
-     MicroServiceRegistrar.class, // Beans
+    MicroServiceInterceptor.class, MicroServiceRegistrar.class, // Beans
 })
 public @interface EnableMicroServices {
   String[] basePackages() default {};

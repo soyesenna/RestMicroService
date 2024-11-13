@@ -3,6 +3,7 @@ package microservice.advice;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
+import microservice.annotations.MicroServiceController;
 import microservice.annotations.MicroServiceIgnore;
 import microservice.config.MicroServiceConfig;
 import microservice.constants.Constants;
@@ -20,7 +21,7 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-@RestControllerAdvice
+@RestControllerAdvice(annotations = MicroServiceController.class)
 public class MicroServiceResponseAdvice implements ResponseBodyAdvice<Object> {
 
     private static final Log log = LogFactory.getLog(MicroServiceResponseAdvice.class);
@@ -39,7 +40,7 @@ public class MicroServiceResponseAdvice implements ResponseBodyAdvice<Object> {
             }
         }
 
-        return !MicroServiceResponse.class.isAssignableFrom(returnType.getParameterType());
+        return true;
     }
 
 
@@ -71,9 +72,6 @@ public class MicroServiceResponseAdvice implements ResponseBodyAdvice<Object> {
             log.error("%s Response success to Wrapping to MicroServiceResponse failed -> %s".formatted(
                 Constants.MICRO_SERVICE_LOG_PREFIX, e.getMessage()), e);
             throw new MicroServiceResponseMappingException(this.microServiceConfig.getClientId());
-        }
-        finally {
-            MicroServiceContext.clear();
         }
     }
 }
