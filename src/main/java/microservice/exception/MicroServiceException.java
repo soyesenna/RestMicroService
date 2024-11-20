@@ -13,6 +13,7 @@ public abstract class MicroServiceException extends RuntimeException{
   protected MicroServiceException(String message, Integer httpStatus, Integer errorCode) {
     super(message);
     this.httpStatus = httpStatus;
+    this.errorCode = errorCode;
   }
 
   public Integer getHttpStatus() {
