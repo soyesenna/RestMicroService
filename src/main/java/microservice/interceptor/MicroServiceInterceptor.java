@@ -63,7 +63,6 @@ public class MicroServiceInterceptor implements HandlerInterceptor {
   @Override
   public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
       Object handler, Exception ex) throws Exception {
-    log.info("%s Clearing MicroServiceContext".formatted(Constants.MICRO_SERVICE_LOG_PREFIX));
     MicroServiceContext.clear();
   }
 }

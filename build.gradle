@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'org.senna'
-version = '0.0.25-beta'
+version = '0.0.26-beta'
 
 repositories {
     mavenCentral()
@@ -27,7 +27,7 @@ mavenPublishing {
     signAllPublications()
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
-    coordinates("io.github.soyesenna", "rest-microservice", "0.0.25-beta")
+    coordinates("io.github.soyesenna", "rest-microservice", "0.0.26-beta")
 
     pom {
         name = 'rest-microservice'
@@ -66,34 +66,21 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure
-    api group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '3.3.2'
+    api 'org.springframework.boot:spring-boot-autoconfigure:3.3.2'
 
-    // https://mvnrepository.com/artifact/org.springframework/spring-context
-    api group: 'org.springframework', name: 'spring-context', version: '6.1.14'
+    api 'org.springframework:spring-context:6.1.14'
 
-    // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
-    api group: 'net.bytebuddy', name: 'byte-buddy', version: '1.15.7'
+    api 'net.bytebuddy:byte-buddy:1.15.7'
 
-    // https://mvnrepository.com/artifact/org.springframework/spring-web
-    api group: 'org.springframework', name: 'spring-web', version: '6.1.12'
-
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.0'
-
-    // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
-    compileOnly group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
-
-    // https://mvnrepository.com/artifact/org.springframework/spring-webmvc
-    api group: 'org.springframework', name: 'spring-webmvc', version: '6.1.13'
-
-    // https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
-    api group: 'org.hibernate.validator', name: 'hibernate-validator', version: '8.0.1.Final'
-
-    // https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
-    api group: 'jakarta.validation', name: 'jakarta.validation-api', version: '3.1.0'
-
+    api 'org.springframework:spring-web:6.1.12'
+    api 'com.fasterxml.jackson.core:jackson-databind:2.18.0'
+    api 'org.springframework:spring-webmvc:6.1.13'
+    api 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+    api 'jakarta.validation:jakarta.validation-api:3.1.0'
     api 'org.springframework.boot:spring-boot-starter-validation:3.3.5'
+
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
+
 }
 
 test {

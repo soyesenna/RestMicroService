@@ -29,7 +29,9 @@ public class MicroServiceContextInitUtil {
   }
 
   public void init(MicroServiceRequest<?> microServiceRequest) {
-    log.info("%s Initializing MicroServiceContext".formatted(Constants.MICRO_SERVICE_LOG_PREFIX));
+    log.info("%s Initializing MicroServiceContext".formatted(Constants.MICRO_SERVICE_START_REQUEST_LOG_PREFIX));
+    log.info("%s MicroServiceRequest -> %s".formatted(Constants.MICRO_SERVICE_LOG_PREFIX,
+        microServiceRequest.toString()));
     MicroServiceContext.init();
 
     String requestId = microServiceRequest.requestId();
@@ -55,7 +57,6 @@ public class MicroServiceContextInitUtil {
     MicroServiceContext.setMyClientId(this.microServiceConfig.getClientId());
     MicroServiceContext.setMetaInfo(microServiceRequest.metadata());
 
-    log.info("%s MicroServiceRequest -> %s".formatted(Constants.MICRO_SERVICE_LOG_PREFIX,
-        microServiceRequest.toString()));
+    log.info("%s MicroServiceRequest initialized".formatted(Constants.MICRO_SERVICE_LOG_PREFIX));
   }
 }
