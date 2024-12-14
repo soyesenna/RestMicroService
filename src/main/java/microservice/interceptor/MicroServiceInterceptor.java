@@ -12,12 +12,14 @@ import microservice.templates.MicroServiceRequest;
 import microservice.utils.MicroServiceContextInitUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
+@Order(1)
 public class MicroServiceInterceptor implements HandlerInterceptor {
 
   private static final Log log = LogFactory.getLog(MicroServiceInterceptor.class);

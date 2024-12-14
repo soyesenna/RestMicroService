@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'org.senna'
-version = '0.0.26-beta'
+version = '0.0.27-beta'
 
 repositories {
     mavenCentral()
@@ -27,7 +27,7 @@ mavenPublishing {
     signAllPublications()
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
-    coordinates("io.github.soyesenna", "rest-microservice", "0.0.26-beta")
+    coordinates("io.github.soyesenna", "rest-microservice", "0.0.27-beta")
 
     pom {
         name = 'rest-microservice'
@@ -48,7 +48,6 @@ mavenPublishing {
                 email = 'kjy915875@gmail.com'
             }
         }
-
         /**
          connection = 'scm:git:github.com/[Github 사용자명]/[오픈소스 Repository 이름].git'
          developerConnection = 'scm:git:ssh://github.com/[Github 사용자명]/[오픈소스 Repository 이름].git'

@@ -1,16 +1,8 @@
 package microservice.utils;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import microservice.config.MicroServiceConfig;
 import microservice.constants.Constants;
 import microservice.context.MicroServiceContext;
-import microservice.exception.MicroServiceRequestPayloadValidationFailException;
 import microservice.exception.NoClientIDException;
 import microservice.exception.NoRequestIDException;
 import microservice.templates.MicroServiceRequest;
