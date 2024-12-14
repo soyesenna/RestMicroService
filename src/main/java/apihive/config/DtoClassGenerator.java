@@ -19,10 +19,12 @@ public class DtoClassGenerator {
   private static final Log log = LogFactory.getLog(DtoClassGenerator.class);
   private final ByteBuddy byteBuddy;
   private final Map<String, Class<?>> generatedClasses;
+  private final ApiHiveConfig apiHiveConfig;
 
-  public DtoClassGenerator() {
+  public DtoClassGenerator(ApiHiveConfig apiHiveConfig) {
     this.byteBuddy = new ByteBuddy();
     this.generatedClasses = new ConcurrentHashMap<>();
+    this.apiHiveConfig = apiHiveConfig;
   }
 
   public Class<?> generateOrGetClass(TypeMetadata metadata) {
@@ -52,7 +54,7 @@ public class DtoClassGenerator {
 
       try {
         // 디렉토리 생성
-        File generatedDir = new File(DiscoverStrategy.GENERATED_SOURCES_PATH);
+        File generatedDir = new File(this.apiHiveConfig.getGeneratedSourcesPath());
         if (!generatedDir.exists()) {
           generatedDir.mkdirs();
         }

@@ -4,12 +4,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "microservice.apihive")
-@Component("microServiceApiHiveConfig")
+@Component("apiHiveConfig")
 public class ApiHiveConfig {
 
   Boolean enableApiHive = false;
   Boolean enableControllerExposer = false;
   Boolean alwaysRefresh = false;
+  String generatedSourcesPath = "build/generated/sources/apihive";
+  ClassLoaderStrategy classLoaderStrategy = ClassLoaderStrategy.THREAD_CONTEXT;
+
+  public enum ClassLoaderStrategy {
+    THREAD_CONTEXT,
+    SYSTEM,
+    CUSTOM
+  }
 
   public Boolean getEnableApiHive() {
     return enableApiHive;
@@ -33,5 +41,21 @@ public class ApiHiveConfig {
 
   public void setAlwaysRefresh(Boolean alwaysRefresh) {
     this.alwaysRefresh = alwaysRefresh;
+  }
+
+  public String getGeneratedSourcesPath() {
+    return generatedSourcesPath;
+  }
+
+  public void setGeneratedSourcesPath(String generatedSourcesPath) {
+    this.generatedSourcesPath = generatedSourcesPath;
+  }
+
+  public ClassLoaderStrategy getClassLoaderStrategy() {
+    return classLoaderStrategy;
+  }
+
+  public void setClassLoaderStrategy(ClassLoaderStrategy classLoaderStrategy) {
+    this.classLoaderStrategy = classLoaderStrategy;
   }
 }
