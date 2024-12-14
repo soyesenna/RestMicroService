@@ -13,10 +13,13 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
+@Order(Ordered.LOWEST_PRECEDENCE - 1000)
 public class MicroServiceRegistrar implements ImportBeanDefinitionRegistrar {
 
   private static final Log log = LogFactory.getLog(MicroServiceRegistrar.class);
@@ -35,7 +38,8 @@ public class MicroServiceRegistrar implements ImportBeanDefinitionRegistrar {
     if (basePackages == null || basePackages.length == 0) {
       basePackages = new String[] {
           ((StandardAnnotationMetadata) importingClassMetadata)
-              .getIntrospectedClass().getPackage().getName()
+              .getIntrospectedClass().getPackage().getName(),
+          "apihive.generated"
       };
     }
 
